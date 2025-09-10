@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-dark-primary: #2C2C2C;
+  --color-dark-scondary: #212121;
+}
+
+label, p, h1, h2 {
+  color: white;
+}
