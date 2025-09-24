@@ -5,7 +5,7 @@ import InputText from "@/app/components/InputText";
 import SelectOptions from "@/app/components/SelectOptions";
 import TextArea from "@/app/components/TextArea";
 import UploadImages from "@/app/components/UploadImages"
-import { Option } from "@/app/types/global";
+import { Nullable, Option } from "@/app/types/global";
 import { useState } from "react"
 import { validator } from "@/app/utils/validations";
 
@@ -20,7 +20,7 @@ export default function CreateBanner() {
     {id: '2', text: 'pinterest', disabled: false }
   ])
   const [typeSocialMedia, setTypeSocialMedia] = useState<string>('1')
-  const [typeSocialMediaFeedback, setTypeSocialMediaFeedback] = useState<string | undefined>('')
+  const [typeSocialMediaFeedback, setTypeSocialMediaFeedback] = useState<Nullable<string>>('')
   const handleOnChangeTypeSocialMedia = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value
     console.log(value)
@@ -29,9 +29,10 @@ export default function CreateBanner() {
   }
 
   const [tags, setTags] = useState<Set<string>>(new Set())
-  const [tagsBoxFeedback, setTagsBoxFeedback] = useState<string>('')
+  const [tagsBoxFeedback, setTagsBoxFeedback] = useState<Nullable<string>>()
   const handleAddTag = (newTag: string) => {
     setTags((prev) => new Set(prev).add('#' + newTag))
+    setTagsBoxFeedback(validator.minSize(Array.from(tags), 2))
   }
   const handleRemoveTag = (tag: string) => {
     const newTags = new Set(tags);
@@ -42,22 +43,22 @@ export default function CreateBanner() {
   const [imageFile, setImageFile] = useState<File | Blob>()
 
   const [contactLink, setContactLink] = useState<string>('')
-  const [contactLinkFeedback, setContactLinkFeedback] = useState<string | undefined>()
+  const [contactLinkFeedback, setContactLinkFeedback] = useState<Nullable<string>>()
   const handleOnChangeContactLink = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value
     setContactLink(value)
-    setContactLinkFeedback(validator.required(contactLink))
+    setContactLinkFeedback(validator.required(value))
   }
 
-  const MAX_TITLE_LENGTH = 25
+  const MAX_TITLE_LENGTH = 12
   const MIN_TITLE_LENGTH = 2
   const [title, setTitle] = useState<string>('')
-  const [titleFeedback, setTitleFeedback] = useState<string | undefined>()
+  const [titleFeedback, setTitleFeedback] = useState<Nullable<string>>()
   const handleOnChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value
     setTitle(value)
-    const validations: Array<string | undefined> = [validator.maxLength(value, MAX_TAG_LENGTH), validator.minLength(value, MIN_TAG_LENGTH)]
-    setTitleFeedback(validations.find((validationMessage?: string) => validationMessage) as string | undefined)
+    const validations: Array<Nullable<string>> = [validator.maxLength(value, MAX_TAG_LENGTH), validator.minLength(value, MIN_TAG_LENGTH)]
+    setTitleFeedback(validations.find((validationMessage: Nullable<string>) => validationMessage))
   }
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
