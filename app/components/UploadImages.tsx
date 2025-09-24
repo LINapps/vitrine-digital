@@ -8,7 +8,7 @@ interface UploadImagesProps {
 }
 type Rotation = 'rotate-none' | 'rotate-90' | 'rotate-180' | 'rotate-270'
 export default function UploadImages({ onSelectImageFile }: UploadImagesProps) {
-  const ROTATIONS = ['rotate-none', 'rotate-90', 'rotate-180', 'rotate-270'] as const
+  const ROTATIONS: Rotation[] = ['rotate-none', 'rotate-90', 'rotate-180', 'rotate-270'] as const
 
   const [preview, setPreviews] = useState<string>()
   const inputFileRef = useRef<HTMLInputElement>(null)
