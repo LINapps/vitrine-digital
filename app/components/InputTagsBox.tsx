@@ -1,17 +1,24 @@
 import { useState } from "react";
 import TagsBox from "./TagsBox"
-interface InputTagsBoxProps {
+interface Props {
+  id?: string;
   label: string;
+  name?: string;
   tags: Set<string>;
   required: boolean;
   feedback: string;
+}
+
+interface Events {
   onAddTag: (newTag: string) => void;
   onRemoveTag: (tag: string) => void;
 }
 
-export default function InputTagsBox({ label, tags, required = false, feedback = '', onAddTag, onRemoveTag }: InputTagsBoxProps) {
+type InputTagsBox = Props & Events
+export default function InputTagsBox({ id, label, name, tags, required = false, feedback = '', onAddTag, onRemoveTag }: InputTagsBox) {
   const [inputValue, setInputValue] = useState<string>('')
   const inputTagsBoxLabel = `${label} ${required ? '*': '(opcional)'}`
+
   function handlerKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
       e.preventDefault()
@@ -20,14 +27,16 @@ export default function InputTagsBox({ label, tags, required = false, feedback =
     }
   }
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex flex-col gap-2 w-full">
       <label className="flex flex-col gap-1">
         <span>{inputTagsBoxLabel}</span>
-        <input 
+        <input
+          id={id}
+          name={name}
           className="border bg-dark-scondary border-white px-4 py-2 rounded-sm" 
-          type="text" 
-          name="categories"
+          type="text"
           value={inputValue}
+          data-selected={tags}
           maxLength={15}
           minLength={2}
           onChange={(e) => setInputValue(e.target.value)}
@@ -36,9 +45,7 @@ export default function InputTagsBox({ label, tags, required = false, feedback =
         />
         { feedback && <p id="input-tag-box-feedback" className="text-xs font-light">{feedback}</p> }
       </label>
-      <div className="tags">
-        <TagsBox tags={Array.from(tags)}/>
-      </div>
+      <TagsBox tags={Array.from(tags)} onRemoveTag={onRemoveTag}/>
     </div>
   )
 }

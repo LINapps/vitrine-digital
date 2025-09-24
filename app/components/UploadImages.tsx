@@ -1,49 +1,99 @@
 'use client';
-import { ArrowDownTrayIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/solid'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ArrowDownTrayIcon, ArrowUturnLeftIcon, ArrowsPointingOutIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { resizeImage } from '../utils/resizeImage';
 
-export default function UploadImages() {
+interface UploadImagesProps {
+  onSelectImageFile: (file: File | Blob) => void
+}
+type Rotation = 'rotate-none' | 'rotate-90' | 'rotate-180' | 'rotate-270'
+export default function UploadImages({ onSelectImageFile }: UploadImagesProps) {
+  const ROTATIONS = ['rotate-none', 'rotate-90', 'rotate-180', 'rotate-270'] as const
+
   const [preview, setPreviews] = useState<string>()
+  const inputFileRef = useRef<HTMLInputElement>(null)
+  const [isCover, setIsCover] = useState<boolean>()
+  const [rotateIndex, setRotateIndex] = useState<number>(0)
+  const [rotateClass, setRotateClass] = useState<Rotation>('rotate-none')
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setPreviews(url)
-    }
+    if (!file) return
+
+    const { blob } = await resizeImage({ file, maxWidth: 320, maxHeight: 320, type: file.type })
+    const url = URL.createObjectURL(blob)
+    setPreviews(url)
+    onSelectImageFile(blob)
   }
 
-  const removeUploadedImage = () => {
-    setPreviews(undefined)
+  const changeImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    inputFileRef.current?.click()
   }
+
+  const rotateImage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setRotateIndex(prev => {
+      let next = prev + 1
+      if (next > 3) next = 0
+
+      setRotateClass(ROTATIONS[next])
+
+      return next
+    })
+  }
+
+  useEffect(() => {
+
+  }, [rotateIndex])
+
   useEffect(() => {
     return () => { if (preview) URL.revokeObjectURL(preview) }
   }, [preview])
+
   return (
-    <div className="flex flex-col gap-3">
-      { !preview && <label className="flex justify-center items-center h-24 border border-dashed border-white w-full rounded-lg bg-dark-scondary">
+    <div className="flex flex-col items-center gap-3">
+      { !preview && 
+      <label
+        className="flex justify-center items-center h-24 border border-dashed border-white w-full rounded-lg bg-dark-scondary"
+        htmlFor="file-upload"
+      >
         <span role="button" className="flex">
           <ArrowDownTrayIcon className="size-6 text-white" />
         </span>
-        <input className="hidden" type="file" hidden onChange={handleChange} />
       </label> }
+      <input ref={inputFileRef} className="hidden" id="file-upload" hidden type="file" onChange={handleChange} />
       { preview && 
         <>
-          <div className="flex justify-center">
+          <div className="flex justify-center h-80 w-80 rounded-md bg-dark-scondary relative">
             <img
-              className="object-cover rounded-sm"
+              className={`${isCover ? 'object-cover' : 'object-contain' } ${rotateClass} object-contain rounded-sm max-h-80 max-w-80 w-full`}
               src={preview}
-              alt=""
-              width={228}
-              height={228}
-            /> 
+              alt="imagem de apresentação do banner"
+
+            />
+            <button 
+              type="button" 
+              className="absolute text-white bottom-2 left-2 p-1 bg-dark-primary rounded-full"
+              onClick={() => setIsCover(prev => !prev)}
+            >
+              <ArrowsPointingOutIcon className="size-5"/>
+            </button>
+            <button 
+              type="button" 
+              className="absolute text-white bottom-2 right-2 p-1 bg-dark-primary rounded-full"
+              onClick={rotateImage}
+            >
+              <ArrowPathIcon className="size-5"/>
+            </button>
           </div>
           <div className="flex justify-center">
             <button 
               className="flex gap-1 items-center bg-dark-scondary text-sm text-white px-2 py-1.5 rounded-sm cursor-pointer"
-              onClick={removeUploadedImage}
+              onClick={changeImage}
+              type="button"
             >
-              < ArrowUturnLeftIcon className="size-5"/>trocar imagem
+              < ArrowUturnLeftIcon className="size-4"/>trocar imagem
             </button>
           </div>
         </>
