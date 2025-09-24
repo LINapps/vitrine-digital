@@ -1,4 +1,4 @@
-import { Option } from "../types/global";
+import { Nullable, Option } from "../types/global";
 
 interface Props {
   id: string;
@@ -13,7 +13,7 @@ interface Props {
   autoFocus?: boolean;
   form?: string;
   autoComplete?: 'on' | 'off';
-  feedback?: string;
+  feedback: Nullable<string>;
   tabIndex?: number;
 }
 

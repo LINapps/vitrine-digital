@@ -1,12 +1,13 @@
 import { useState } from "react";
 import TagsBox from "./TagsBox"
+import { Nullable } from "../types/global";
 interface Props {
   id?: string;
   label: string;
   name?: string;
   tags: Set<string>;
   required: boolean;
-  feedback: string;
+  feedback: Nullable<string>;
 }
 
 interface Events {
