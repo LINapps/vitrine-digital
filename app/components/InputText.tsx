@@ -1,8 +1,8 @@
 interface Props {
   id: string;
   name?: string;
-  label: string;
-  value: string;
+  label?: string;
+  defaultValue: string;
   required?: boolean;
   readonly?: boolean;
   disabled?: boolean;
@@ -23,7 +23,7 @@ type InputText = Props & Events
 export default function InputText({
   id,
   label = '',
-  value = '',
+  defaultValue = '',
   name,
   required = false,
   readonly = false,
@@ -45,7 +45,7 @@ export default function InputText({
         className="text-sm border bg-dark-scondary border-white px-4 py-2.5 rounded-sm"
         type="text" 
         name={name}
-        value={value}
+        defaultValue={defaultValue}
         required={required}
         readOnly={readonly}
         disabled={disabled}
