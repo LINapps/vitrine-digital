@@ -7,32 +7,28 @@ import TextArea from "@/app/components/TextArea";
 import UploadImages from "@/app/components/UploadImages"
 import { Nullable, Option } from "@/app/types/global";
 import { useState } from "react"
-import { validator } from "@/app/utils/validations";
 
 export default function CreateBanner() {
   const MAX_TAG_LENGTH = 12
   const MIN_TAG_LENGTH = 2
 
-  const [options, setOptions] = useState<Option[]>([
+  const options = [
     {id: '', text: 'selecione uma opção', disabled: true },
     {id: '0', text: 'instagram', disabled: false },
     {id: '1', text: 'facebook', disabled: false },
     {id: '2', text: 'pinterest', disabled: false }
-  ])
+  ]
   const [typeSocialMedia, setTypeSocialMedia] = useState<string>('1')
   const [typeSocialMediaFeedback, setTypeSocialMediaFeedback] = useState<Nullable<string>>('')
   const handleOnChangeTypeSocialMedia = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value
-    console.log(value)
     setTypeSocialMedia(value)
-    // setTypeSocialMediaFeedback(validator.required(typeSocialMedia))
   }
 
   const [tags, setTags] = useState<Set<string>>(new Set())
   const [tagsBoxFeedback, setTagsBoxFeedback] = useState<Nullable<string>>()
   const handleAddTag = (newTag: string) => {
     setTags((prev) => new Set(prev).add('#' + newTag))
-    setTagsBoxFeedback(validator.minSize(Array.from(tags), 2))
   }
   const handleRemoveTag = (tag: string) => {
     const newTags = new Set(tags);
@@ -47,7 +43,6 @@ export default function CreateBanner() {
   const handleOnChangeContactLink = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value
     setContactLink(value)
-    setContactLinkFeedback(validator.required(value))
   }
 
   const MAX_TITLE_LENGTH = 12
@@ -57,18 +52,16 @@ export default function CreateBanner() {
   const handleOnChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value
     setTitle(value)
-    const validations: Array<Nullable<string>> = [validator.maxLength(value, MAX_TAG_LENGTH), validator.minLength(value, MIN_TAG_LENGTH)]
-    setTitleFeedback(validations.find((validationMessage: Nullable<string>) => validationMessage))
   }
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     const data = new FormData(form)
-    console.log(data.get('domain'))
+    // continue the submit
   }
   return (
-    <div className="flex flex-col gap-5 mx-80 py-6">
+    <div className="flex flex-col gap-5 py-6 px-4">
       <h1>Criar banner</h1>
       <form className="flex flex-col gap-8" onSubmit={submit}>
         <section className="flex flex-col">
@@ -90,7 +83,7 @@ export default function CreateBanner() {
             <InputText 
               id="url-to" 
               label="Link, url ou contato (obrigatório)" 
-              value={contactLink}
+              defaultValue={contactLink}
               feedback={contactLinkFeedback}
               required={true}
               onChange={handleOnChangeContactLink} 
@@ -115,7 +108,7 @@ export default function CreateBanner() {
               id="title"
               name="title"
               label="Título (obrigatório)"  
-              value={title}
+              defaultValue={title}
               required={true}
               min={MIN_TITLE_LENGTH}
               max={MAX_TITLE_LENGTH}
